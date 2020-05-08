@@ -100,8 +100,9 @@ bool PathVertex::sampleNext(const Scene *scene, Sampler *sampler,
                 const Emitter *emitter = static_cast<const Emitter *>(pRec.object);
                 DirectionSamplingRecord dRec;
 
+                Point2 pixelAreaSample = sampler->next2D();
                 Spectrum result = emitter->sampleDirection(dRec, pRec,
-                    emitter->needsDirectionSample() ? sampler->next2D() : Point2(0.5f));
+                    emitter->needsDirectionSample() ? sampler->next2D() : Point2(0.5f), &pixelAreaSample);
 
                 if (result.isZero())
                     return false;
@@ -265,7 +266,10 @@ bool PathVertex::sampleNext(const Scene *scene, Sampler *sampler,
 
     if (throughput) {
         /* For BDPT: keep track of the path throughput to run russian roulette */
-        (*throughput) *= weight[mode];
+        if (type == EEmitterSample)     // this fixes firefly issues when importance-sampling a projective texture
+            (*throughput) *= weight[EImportance] * pdf[EImportance];
+        else
+            (*throughput) *= weight[mode];
 
         if (russianRoulette) {
             Float q = std::min(throughput->max(), (Float) 0.95f);
@@ -1408,6 +1412,7 @@ std::string PathVertex::toString() const {
         << "  weight[radiance] = " << weight[ERadiance].toString() << "," << endl
         << "  pdf[importance] = " << pdf[EImportance] << "," << endl
         << "  pdf[radiance] = " << pdf[ERadiance] << endl
+        << "  rrWeight = " << rrWeight << endl
         << "]";
     return oss.str();
 }

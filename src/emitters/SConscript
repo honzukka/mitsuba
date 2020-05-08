@@ -10,5 +10,6 @@ plugins += env.SharedLibrary('sky', ['sky.cpp', 'sunsky/skymodel.cpp'])
 plugins += env.SharedLibrary('sun', ['sun.cpp'])
 plugins += env.SharedLibrary('sunsky', ['sunsky.cpp'])
 plugins += env.SharedLibrary('spot', ['spot.cpp'])
+plugins += env.SharedLibrary('projector', ['projector.cpp'])
 
 Export('plugins')
