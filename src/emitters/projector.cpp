@@ -185,8 +185,8 @@ class ProjectorEmitter : public Emitter {
             // box filter (evaluateTexture() needs to use the same pixel filtering method!!!)
 
             Point2i pixelCoords(
-                math::floorToInt(uv.x * m_textureResolution.x),
-                math::floorToInt(uv.y * m_textureResolution.y)
+                math::clamp(math::floorToInt(uv.x * m_textureResolution.x), 0, m_textureResolution.x - 1),
+                math::clamp(math::floorToInt(uv.y * m_textureResolution.y), 0, m_textureResolution.y - 1)
             );
             return pixelCoords.y * m_textureResolution.x + pixelCoords.x;
         }
